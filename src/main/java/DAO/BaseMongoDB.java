@@ -74,11 +74,9 @@ public class BaseMongoDB {
         clientCollection.insert(bO);
         }
         catch (Exception e) {
-            System.out.println("pb insertion");
-            e.printStackTrace();
-            System.exit(0);
+            throw new Exception ("pb d'insertion" + e.getMessage());
         }
-        return 0;
+        return derInd;
     }
     /**
      * 
@@ -98,9 +96,7 @@ public class BaseMongoDB {
         clientCollection.update (searchQuery, newDocument);
          }
         catch (Exception e) {
-            System.out.println("pb insertion");
-            e.printStackTrace();
-            System.exit(0);
+            throw new Exception ("pb de modification" + e.getMessage());
         }
     }
     /**
@@ -109,12 +105,20 @@ public class BaseMongoDB {
      * @throws java.lang.Exception
      */
     public static void delete(Person person) throws Exception {
-        BasicDBObject cliDel = new BasicDBObject();
-        cliDel.put("id", person.getId());
-        clientCollection.remove(cliDel);
+        try {
+            BasicDBObject cliDel = new BasicDBObject();
+            System.out.println("id personne à supprimer " +person.getId());
+            cliDel.put("id", person.getId());
+            clientCollection.remove(cliDel);
+        } catch (Exception e) {
+            throw new Exception ("pb de suppression" + e.getMessage());
+        }
     }
     
-    public static int sortCollection() {
+    private static int sortCollection() throws Exception {
+        // méthode pour trier la collection par ordre décroissant
+        // puis de récupérer le premier enregistrement qui correspond au dernier indice
+        // en lisant le curseur
         BasicDBObject dbo = new BasicDBObject();
         dbo.put("id", -1);
         DBCursor cursor = clientCollection.find().sort(dbo);
@@ -126,10 +130,10 @@ public class BaseMongoDB {
             if (i == 0) {
                 derInd = id;
                 derInd++;
-                i++;
+                i=1;
             }
-       }         
-       
+        }
+        System.out.println("derInd " + derInd);
         return derInd;
     }
  
