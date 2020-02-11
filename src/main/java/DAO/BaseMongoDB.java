@@ -31,17 +31,19 @@ public class BaseMongoDB {
     public static void selectAll() throws Exception{
         try {
             
-            DBCollection restoCollection = Connexion.getDatabase().getCollection("restaurants");
-                BasicDBObject query = new BasicDBObject();
-                BasicDBObject field = new BasicDBObject();
-                query.put("name", "Kosher Island");
-                field.put("name", 1);
-                field.put("cuisine", 1);
-            DBCursor cursor = restoCollection.find(query, field);
+            DBCollection restoCollection = Connexion.getDatabase().getCollection("client");
+//                BasicDBObject query = new BasicDBObject();
+//                BasicDBObject field = new BasicDBObject();
+//                query.put("name", "Kosher Island");
+//                field.put("name", 1);
+//                field.put("cuisine", 1);
+//            DBCursor cursor = restoCollection.find(query, field);
+            DBCursor cursor = restoCollection.find();
+
             try {
             while(cursor.hasNext()) {
                DBObject obj = cursor.next();
-               System.out.println(obj.get("name") + " => " + obj.get("cuisine"));
+               System.out.println(obj.get("id") + " => " + obj.get("nom") + " " + obj.get("prenom"));
                }
             } finally {
                cursor.close();

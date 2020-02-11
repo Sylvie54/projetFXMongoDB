@@ -36,7 +36,7 @@ public class Connexion  {
         
         try {
             MongoClient mongoClient = new MongoClient("localhost", 27017);
-            database = mongoClient.getDB("new_york");
+            database = mongoClient.getDB("projetFX");
             System.out.println("connect ok");
         }    
         catch (Exception e) {
