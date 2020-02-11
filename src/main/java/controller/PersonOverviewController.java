@@ -14,7 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import AFPA.CDA03.demo.App;
-import DAO.BaseSQLServer;
+import DAO.BaseMongoDB;
 import model.Person;
 import java.util.Optional;
 import javafx.scene.control.Alert;
@@ -138,7 +138,7 @@ public class PersonOverviewController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
                 personTable.getItems().remove(selectedIndex);
-                BaseSQLServer.delete(selectedPerson);
+                BaseMongoDB.delete(selectedPerson);
             }
         }
         else {
@@ -157,7 +157,7 @@ private void handleNewPerson() throws Exception  {
  // appel de la méthode ouvrant la fenêtre modale de création/édition de la personne
     boolean okClicked = App.showPersonEditDialog(tempPerson);
     if (okClicked) {
-        int dernierId = BaseSQLServer.insert(tempPerson);
+        int dernierId = BaseMongoDB.insert(tempPerson);
         tempPerson.setId(dernierId);
         App.getPersonData().add(tempPerson);
        
@@ -177,7 +177,7 @@ private void handleEditPerson() throws Exception {
         boolean okClicked = App.showPersonEditDialog(selectedPerson);
         if (okClicked) {
             showPersonDetails(selectedPerson);
-            BaseSQLServer.update(selectedPerson, ancId);
+            BaseMongoDB.update(selectedPerson, ancId);
         }
     }   else {
         // Nothing selected.

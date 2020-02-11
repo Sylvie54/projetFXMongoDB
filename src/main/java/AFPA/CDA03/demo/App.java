@@ -49,7 +49,6 @@ public class App extends Application
             */ 
             this.primaryStage.setOnCloseRequest(event ->
             {
-                Connexion.closeConnection();
                 System.exit(0);
             });  
             // appel de la méthode d'initialisation de la base    
@@ -61,7 +60,6 @@ public class App extends Application
             Alertes.alerte(Alert.AlertType.WARNING,primaryStage,
                     "Attention", "Un problème est survenu", "Veuillez réessayer ultérieurement");
             e.printStackTrace();
-            Connexion.closeConnection();
             System.exit(0);
         }
     }
@@ -93,34 +91,10 @@ public class App extends Application
         connexion à base de données et chargement des données de la base
         */
         Connexion.AccesBase();
-        BaseSQLServer.selectAll();
+        BaseMongoDB.selectAll();
         
-        // ----------- partie MongoDB ----------------------
-        try {
-            MongoClient mongoClient = new MongoClient("localhost", 27017);
-            DB database = mongoClient.getDB("new_york");
-            System.out.println("connect ok");
-            DBCollection restoCollection = database.getCollection("restaurants");
-                BasicDBObject query = new BasicDBObject();
-                BasicDBObject field = new BasicDBObject();
-                query.put("name", "Kosher Island");
-                field.put("name", 1);
-                field.put("cuisine", 1);
-            DBCursor cursor = restoCollection.find(query, field);
-            try {
-            while(cursor.hasNext()) {
-               DBObject obj = cursor.next();
-               System.out.println(obj.get("name") + " => " + obj.get("cuisine"));
-               }
-            } finally {
-               cursor.close();
-            }
-        }
-        catch (Exception e) { 
-            e.printStackTrace();
-            System.exit(0);
         
-        }    
+        
     }
 
     /**
@@ -178,7 +152,6 @@ public class App extends Application
             // sortie del'application par la croix du borderPane
             dialogStage.setOnCloseRequest(event ->
             {
-                Connexion.closeConnection();
                 System.exit(0);
             });    
             Scene scene = new Scene(page);
