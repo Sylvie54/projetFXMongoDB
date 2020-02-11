@@ -66,11 +66,10 @@ public class BaseMongoDB {
     public static int insert(Person person) throws Exception {
         try {
         Document bO = new Document();
+        derInd++;
         bO.put("id", derInd);
         bO.put("nom", person.getFirstName());
         bO.put("prenom", person.getLastName());
-        derInd++;
-        
         CLIENTCOLLECTION.insertOne(bO);
         }
         catch (Exception e) {
@@ -91,7 +90,7 @@ public class BaseMongoDB {
         newDocument.append("nom", person.getFirstName());
         newDocument.append("prenom", person.getLastName());
         
-        
+            System.out.println("ancid " + ancId + "getId "+ person.getId());
         Document searchQuery = new Document("id", ancId);
         CLIENTCOLLECTION.updateOne(searchQuery, new Document("$set", newDocument));
          }
@@ -131,7 +130,6 @@ public class BaseMongoDB {
             id = Integer.parseInt(obj.get("id").toString());
             if (i == 0) {
                 derInd = id;
-                derInd++;
                 i=1;
             }
         }
