@@ -6,17 +6,11 @@
 package DAO;
 
 import AFPA.CDA03.demo.App;
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import model.ExceptionsModele;
 import model.Person;
+
 
 /**
  *
@@ -41,9 +35,15 @@ public class BaseMongoDB {
             DBCursor cursor = restoCollection.find();
 
             try {
+            Person person;    
             while(cursor.hasNext()) {
-               DBObject obj = cursor.next();
-               System.out.println(obj.get("id") + " => " + obj.get("nom") + " " + obj.get("prenom"));
+                DBObject obj = cursor.next();
+                System.out.println(obj.get("id") + " => " + obj.get("nom") + " " + obj.get("prenom"));
+                int id = Integer.parseInt(obj.get("id").toString());
+                String nom = (String) obj.get("nom");
+                String prenom = (String) obj.get("prenom");
+                person = new Person(id, nom, prenom);
+                App.getPersonData().add(person);
                }
             } finally {
                cursor.close();
