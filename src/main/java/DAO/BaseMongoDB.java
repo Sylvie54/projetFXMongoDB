@@ -10,7 +10,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import model.Person;
+import org.bson.Document;
 
 
 /**
@@ -18,7 +21,7 @@ import model.Person;
  * @author Sylvie
  */
 public class BaseMongoDB {
-    private static DBCollection clientCollection = Connexion.getDatabase().getCollection("client");
+    private static final MongoCollection CLIENTCOLLECTION = Connexion.getDatabase().getCollection("client");
     private static int derInd =0;
    /**
     * méthode de sélection de toutes les personnes
@@ -34,23 +37,20 @@ public class BaseMongoDB {
 //                field.put("name", 1);
 //                field.put("cuisine", 1);
 //            DBCursor cursor = restoCollection.find(query, field);
-            DBCursor cursor = clientCollection.find();
-
-            try {
-            Person person;    
-            while(cursor.hasNext()) {
-                DBObject obj = cursor.next();
+            FindIterable<Document> cursor = CLIENTCOLLECTION.find();
+            for (Document obj : cursor) {
+                Person person;
                 int id = Integer.parseInt(obj.get("id").toString());
-                String nom = (String) obj.get("nom");
-                String prenom = (String) obj.get("prenom");
+                String nom =  obj.get("nom").toString();
+                String prenom = obj.get("prenom").toString();
                 person = new Person(id, nom, prenom);
                 App.getPersonData().add(person);
                }
-            } finally {
-               cursor.close();
-            }
+            
+            
            derInd = sortCollection();
-        }
+            }
+            
         catch (Exception e) { 
             e.printStackTrace();
             System.exit(0);
@@ -65,13 +65,13 @@ public class BaseMongoDB {
      */
     public static int insert(Person person) throws Exception {
         try {
-        BasicDBObject bO = new BasicDBObject();
+        Document bO = new Document();
         bO.put("id", derInd);
         bO.put("nom", person.getFirstName());
         bO.put("prenom", person.getLastName());
         derInd++;
         
-        clientCollection.insert(bO);
+        CLIENTCOLLECTION.insertOne(bO);
         }
         catch (Exception e) {
             throw new Exception ("pb d'insertion" + e.getMessage());
@@ -86,17 +86,18 @@ public class BaseMongoDB {
      */
     public static void update(Person person, int ancId) throws Exception {
         try {
-        BasicDBObject newDocument = new BasicDBObject();
-        newDocument.put("id", person.getId());
-        newDocument.put("nom", person.getFirstName());
-        newDocument.put("prenom", person.getLastName());
+        Document newDocument = new Document();
+         newDocument.append("id", person.getId());
+        newDocument.append("nom", person.getFirstName());
+        newDocument.append("prenom", person.getLastName());
         
         
-        BasicDBObject searchQuery = new BasicDBObject().append("id", ancId);
-        clientCollection.update (searchQuery, newDocument);
+        Document searchQuery = new Document("id", ancId);
+        CLIENTCOLLECTION.updateOne(searchQuery, new Document("$set", newDocument));
          }
         catch (Exception e) {
-            throw new Exception ("pb de modification" + e.getMessage());
+            e.printStackTrace();
+            throw new Exception ("pb de modification" + person + e.getMessage());
         }
     }
     /**
@@ -106,10 +107,10 @@ public class BaseMongoDB {
      */
     public static void delete(Person person) throws Exception {
         try {
-            BasicDBObject cliDel = new BasicDBObject();
+            Document cliDel = new Document();
             System.out.println("id personne à supprimer " +person.getId());
             cliDel.put("id", person.getId());
-            clientCollection.remove(cliDel);
+            CLIENTCOLLECTION.deleteOne(cliDel);
         } catch (Exception e) {
             throw new Exception ("pb de suppression" + e.getMessage());
         }
@@ -119,13 +120,14 @@ public class BaseMongoDB {
         // méthode pour trier la collection par ordre décroissant
         // puis de récupérer le premier enregistrement qui correspond au dernier indice
         // en lisant le curseur
-        BasicDBObject dbo = new BasicDBObject();
+        // je pourrais passer par une collection mais c'est pour essayer le sort
+        Document dbo = new Document();
         dbo.put("id", -1);
-        DBCursor cursor = clientCollection.find().sort(dbo);
+        FindIterable<Document> cursor = CLIENTCOLLECTION.find().sort(dbo);
         int i = 0;
         int id, derInd = 0;
-        while(cursor.hasNext()) {
-            DBObject obj = cursor.next();
+        for (Document obj : cursor) {
+            
             id = Integer.parseInt(obj.get("id").toString());
             if (i == 0) {
                 derInd = id;

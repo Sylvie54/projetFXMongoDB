@@ -7,6 +7,7 @@ package DAO;
 
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 
 
 /**
@@ -15,9 +16,10 @@ import com.mongodb.MongoClient;
  */
 public class Connexion  {
   
-    private static DB database;
+ //   private static DB database;
+    private static MongoDatabase database;
 
-    public static DB getDatabase() {
+    public static MongoDatabase getDatabase() {
         return database;
     }
    
@@ -25,7 +27,8 @@ public class Connexion  {
         
         try {
             MongoClient mongoClient = new MongoClient("localhost", 27017);
-            database = mongoClient.getDB("projetFX");
+         //  database = mongoClient.getDB("projetFX");
+            database = mongoClient.getDatabase("projetFX");
             System.out.println("connect ok");
             
         }    

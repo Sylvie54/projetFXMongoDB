@@ -14,7 +14,14 @@ import javafx.stage.Stage;
  */
 public class Alertes {
     
-    
+    /**
+     * 
+     * @param alertype type d'alerte
+     * @param stage stage appelant l'alerte
+     * @param title titre du message
+     * @param header en tête du message
+     * @param message message
+     */
     public static void alerte (Alert.AlertType alertype,Stage stage, String title, String header, String message ) {
       Alert alert = new Alert(alertype);
             alert.initOwner( stage);

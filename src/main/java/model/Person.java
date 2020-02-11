@@ -37,6 +37,7 @@ public class Person {
     /**
      * Default constructor.
      * 
+     * @throws java.lang.Exception
      */
     public Person() throws Exception     {
         this(0,null, null);
@@ -45,9 +46,10 @@ public class Person {
     /**
      * Constructor with some initial data.
      * 
+     * @param id
      * @param firstName
      * @param lastName
-     * @throws java.lang.Exception
+     * @throws model.ExceptionsModele
      * 
      */
     public Person(int id,String firstName, String lastName) throws ExceptionsModele  {
@@ -151,4 +153,11 @@ public class Person {
     public ObjectProperty<LocalDate> birthdayProperty() {
         return birthday;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" + "id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", street=" + street + ", postalCode=" + postalCode + ", city=" + city + ", birthday=" + birthday + '}';
+    }
+    
+    
 }    
