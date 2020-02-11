@@ -6,6 +6,7 @@
 package DAO;
 
 import AFPA.CDA03.demo.App;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -17,7 +18,8 @@ import model.Person;
  * @author Sylvie
  */
 public class BaseMongoDB {
-   
+    private static DBCollection clientCollection = Connexion.getDatabase().getCollection("client");
+    private static int derInd =0;
    /**
     * méthode de sélection de toutes les personnes
     * @throws Exception
@@ -25,20 +27,19 @@ public class BaseMongoDB {
     public static void selectAll() throws Exception{
         try {
             
-            DBCollection restoCollection = Connexion.getDatabase().getCollection("client");
+           
 //                BasicDBObject query = new BasicDBObject();
 //                BasicDBObject field = new BasicDBObject();
 //                query.put("name", "Kosher Island");
 //                field.put("name", 1);
 //                field.put("cuisine", 1);
 //            DBCursor cursor = restoCollection.find(query, field);
-            DBCursor cursor = restoCollection.find();
+            DBCursor cursor = clientCollection.find();
 
             try {
             Person person;    
             while(cursor.hasNext()) {
                 DBObject obj = cursor.next();
-                System.out.println(obj.get("id") + " => " + obj.get("nom") + " " + obj.get("prenom"));
                 int id = Integer.parseInt(obj.get("id").toString());
                 String nom = (String) obj.get("nom");
                 String prenom = (String) obj.get("prenom");
@@ -48,6 +49,7 @@ public class BaseMongoDB {
             } finally {
                cursor.close();
             }
+           derInd = sortCollection();
         }
         catch (Exception e) { 
             e.printStackTrace();
@@ -62,7 +64,20 @@ public class BaseMongoDB {
      * @throws java.lang.Exception
      */
     public static int insert(Person person) throws Exception {
-        System.out.println("insert à faire");
+        try {
+        BasicDBObject bO = new BasicDBObject();
+        bO.put("id", derInd);
+        bO.put("nom", person.getFirstName());
+        bO.put("prenom", person.getLastName());
+        derInd++;
+        
+        clientCollection.insert(bO);
+        }
+        catch (Exception e) {
+            System.out.println("pb insertion");
+            e.printStackTrace();
+            System.exit(0);
+        }
         return 0;
     }
     /**
@@ -72,8 +87,21 @@ public class BaseMongoDB {
      * @throws java.lang.Exception
      */
     public static void update(Person person, int ancId) throws Exception {
-        System.out.println("update à faire");
+        try {
+        BasicDBObject newDocument = new BasicDBObject();
+        newDocument.put("id", person.getId());
+        newDocument.put("nom", person.getFirstName());
+        newDocument.put("prenom", person.getLastName());
         
+        
+        BasicDBObject searchQuery = new BasicDBObject().append("id", ancId);
+        clientCollection.update (searchQuery, newDocument);
+         }
+        catch (Exception e) {
+            System.out.println("pb insertion");
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
     /**
      * méthode de supression d' une personne
@@ -81,7 +109,28 @@ public class BaseMongoDB {
      * @throws java.lang.Exception
      */
     public static void delete(Person person) throws Exception {
-        System.out.println("delete à faire");
+        BasicDBObject cliDel = new BasicDBObject();
+        cliDel.put("id", person.getId());
+        clientCollection.remove(cliDel);
+    }
+    
+    public static int sortCollection() {
+        BasicDBObject dbo = new BasicDBObject();
+        dbo.put("id", -1);
+        DBCursor cursor = clientCollection.find().sort(dbo);
+        int i = 0;
+        int id, derInd = 0;
+        while(cursor.hasNext()) {
+            DBObject obj = cursor.next();
+            id = Integer.parseInt(obj.get("id").toString());
+            if (i == 0) {
+                derInd = id;
+                derInd++;
+                i++;
+            }
+       }         
+       
+        return derInd;
     }
  
 }
